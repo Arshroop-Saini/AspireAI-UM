@@ -1,0 +1,91 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.eggs/
+dist/
+build/
+sdist/
+*.egg-info/
+*.deb
+*.rpm
+*.exe
+
+# PyInstaller
+#  Usually these files are written by a python script; ignoring them is safe.
+#  It's better to ignore entire directories if possible, though.
+#
+# __pycache__/
+# !__pycache__/.gitignore
+# # *.pyc
+# *~
+# *.pyo
+# *.pyd
+# # __init__.pyc
+# # __init__.pyo
+#
+# # C extensions
+# *.so
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Source directory
+source/
+source/**
+/source
+/source/**
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.log
+*.rpt
+*.out
+.mypy_cache/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+*.pot
+__pycache__/
+tmp/
+*.pyc
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx stuff:
+docs/_build
+
+# MkDocs stuff:
+site
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# VS Code
+.vscode/
+.vercel

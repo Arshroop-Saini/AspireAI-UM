@@ -1,0 +1,95 @@
+analyze_profile_task:
+  description: |
+   - Analyze the student profile with auth0_id - {auth0_id} using the StudentProfileMemoryTool which fetches data directly from MongoDB.
+    - Use the StudentProfileMemoryTool with input {"auth0_id": "{auth0_id}"} to retrieve the student's profile from the database
+    - Proceed ONLY if data was found
+    
+    If data exists, follow these steps:
+
+    1. Data Verification:
+       - DO NOT proceed with analysis if no data was found
+   
+    2. Analyze the following data fields from the student profile:
+             - student_statistics (GPA, SAT scores, etc.)
+             - student_preferences (college types, campus sizes, etc.)
+             - student_basic_info (name, email, etc.)
+             - student_context (background information)
+             - student_theme
+             - hooks
+             - personality_type
+             - target_colleges
+             - extracurriculars
+             - awards
+
+    3. Output Format:
+       - Provide analysis ONLY for fields that exist in the profile
+       - DO NOT make any assumptions, base your analysis strictly on the available data
+       - DO NOT create or infer data that isn't in the profile
+    
+    4. Transfer the analyzed student profile data to the college_expert agent.
+
+  expected_output: |
+    ANALYSIS (only if data was found):
+    - List of all fields found in memory
+    - List of all fields missing from memory
+    - Analysis of available data (no assumptions or inferences)
+    - Clear indication if no profile data was found
+    - Transfer the analyzed student profile data to the college_expert agent.
+
+research_colleges:
+  description: |
+    CRITICAL: You are the College Matching Expert. Your task is to suggest the best-fit US colleges based on the student's profile and specified college type - {college_type} while ensuring suggestions are unique and not previously recommended.
+
+    MANDATORY FIRST STEP - Check Past Suggestions:
+    1. Use PastSuggestionsHistoryTool with auth0_id - {auth0_id} to get all previously suggested colleges and do not suggest them again.
+       - Command: Use the tool with the provided auth0_id - {auth0_id}
+       - Wait for the complete list of past suggestions
+       - If tool shows "No previous suggestions", proceed to step 2
+       - If tool shows existing suggestions:
+         * Create exclusion list from all past suggestions
+         * Analyze suggestion patterns to understand what types of colleges have been covered
+         * If tool indicates many suggestions exist, carefully evaluate if new matches are possible
+
+    2. Never suggest any college that is in the target_colleges list from the student profile. After you know what to suggest proceed to step 3 to know how to search for the colleges.
+
+    3. Consider College Type:
+       - Check the college_type parameter in inputs
+       - If college_type - {college_type} is not 'all', only search for and suggest colleges of that type
+       - Ensure each suggestion includes the college type in the output
+
+    4. Use the SearchTool to find and suggest new colleges (keep in mind what not to suggest):
+       RESEARCH PROCCESS USING THE SearchTool:
+       a) Example search query to find colleges for domestic students that do not require financial aid:
+         - "Best [{college_type}] [College Type of student]  colleges in [Region of student] region and [state of student] state with [campus size of student] campus size for [ethnicity of student] students from [country of student] who do not require financial aid and are [hook of student] with a GPA of [GPA of student], a SAT/ACT score of [SAT/ACT score of student], a class rank of [class rank of student], have a personality type of [personality type of student], have a profile themed around  [theme of student]"
+       b) Example search query to find colleges for domestic students that require financial aid:
+         - "Best [{college_type}] [College Type of student] colleges in [Region of student] region and [state of student] state with [campus size of student] campus size for [ethnicity of student] students from [country of student] who require financial aid and are [hook of student], with a estimated family contribution of [estimated family contribution of student] with a GPA of [GPA of student], a SAT/ACT score of [SAT/ACT score of student], a class rank of [class rank of student], have a personality type of [personality type of student], have a profile themed around  [theme of student]"
+       c) Example search query to find colleges for international students that do not require financial aid:
+         - "Best [{college_type}] [College Type of student] colleges in [Region of student] region and [state of student] state with [campus size of student] campus size for [ethnicity of student] students from [country of student] who do not require financial aid and are [hook of student], with a GPA of [GPA of student], a SAT/ACT score of [SAT/ACT score of student], a class rank of [class rank of student], have a personality type of [personality type of student], have a profile themed around  [theme of student]"
+       d) Example search query to find colleges for international students that require financial aid:
+         - "Best [{college_type}] [College Type of student] colleges in [Region of student] region and [state of student] state with [campus size of student] campus size for [ethnicity of student] students from [country of student] who require financial aid and are [hook of student], with a estimated family contribution of [estimated family contribution of student] with a GPA of [GPA of student], a SAT/ACT score of [SAT/ACT score of student], a class rank of [class rank of student], have a personality type of [personality type of student], have a profile themed around  [theme of student]"
+
+    5. Handle Limited or No New Suggestions:
+       If running out of unique matches, provide specific guidance:
+       "LIMITED SUGGESTIONS - Modify preferences to get more matches:
+       
+       Available new matches: [list any remaining unique matches]"
+
+  expected_output: |
+    EITHER Format A (5 New Suggestions Available):
+    NEW UNIQUE SUGGESTIONS:
+    1. College Name | College Type  (safety, target, reach)
+    2. College Name | College Type  (safety, target, reach)
+    3. College Name | College Type  (safety, target, reach)
+    4. College Name | College Type  (safety, target, reach)
+    5. College Name | College Type  (safety, target, reach)
+
+    OR Format B (Limited/No New Suggestions):
+    LIMITED SUGGESTIONS - Modify preferences to get more matches:
+    
+    Available new matches:
+    1. College Name | College Type  (safety, target, reach)
+    2. College Name | College Type  (safety, target, reach)
+    ....
+    ....
+    ....
+    upto 5 new unique matches, can be less than 5 or even 0 if no new matches are available.
